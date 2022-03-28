@@ -12,8 +12,6 @@ idna==3.3
 itsdangerous==2.1.2
 Jinja2==3.1.1
 MarkupSafe==2.1.1
-python-magic>0.3.50
-python-magic-bin>0.3.5
 pytz==2022.1
 requests==2.27.1
 six==1.16.0
