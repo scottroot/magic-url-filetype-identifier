@@ -2,7 +2,7 @@ import requests
 # from urllib.parse import unquote
 import json
 import datetime
-from html_scraper import scrapeWebpage
+# from html_scraper import scrapeWebpage
 
 
 def magicId (content):
@@ -71,9 +71,9 @@ def runArweaveAPI():
             "data_type": i["node"]["data"]["type"],
             "file_type": filetype
             }
-        if "HTML" in str(filetype):
+        # if "HTML" in str(filetype):
             # try:
-            webscrape = scrapeWebpage(tx_id)
+            # webscrape = scrapeWebpage(tx_id)
             # try: data["language"] = webscrape["language"]
             # except: pass
             # print("-----------------------------------------------------------------------------")
