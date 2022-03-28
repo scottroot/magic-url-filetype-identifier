@@ -1,5 +1,6 @@
 from urllib.parse import unquote
 import requests
+from arweave_api 
 
 def magicId (content):
     from magic_lib import Magic
