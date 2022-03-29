@@ -70,20 +70,25 @@ def runArweaveAPI():
                 "timestamp": str(datetime.datetime.fromtimestamp(timestamp)),
                 "tx_id": tx_id}
 
-        # if "HTML" in str(filetype):
-            # try:
-            # webscrape = scrapeWebpage(tx_id)
-            # try: data["language"] = webscrape["language"]
-            # except: pass
-            # print("-----------------------------------------------------------------------------")
-            # print('length of data["entities"] = ' + str(webscrape["entities"]))
-            # print('data["entities"][0] = ' + str(webscrape["entities"][0]))
-            # data["entities"] = str([dict({"entity_type":webscrape["entities"][i][1], "entity_name":webscrape["entities"][i][0]}) for i in list(webscrape["entities"])])
-            # except: pass
-            # try: data["top_words"] = webscrape["top_words"]
-            # except: pass
-            # except:
-            #     pass
+        if "text" in str(filetype):
+            try:
+                webscrape = scrapeWebpage(tx_id)
+                data["raw_text"] = str(webscrape)
+                try: 
+                    data["source_language"] = webscrape["language"]
+                except: pass
+                # print("-----------------------------------------------------------------------------")
+                # print('length of data["entities"] = ' + 
+                try:
+                    data["named_entities"] = webscrape["entities"]
+                except: pass
+                # print('data["entities"][0] = ' + str(webscrape["entities"][0]))
+                # data["entities"] = str([dict({"entity_type":webscrape["entities"][i][1], "entity_name":webscrape["entities"][i][0]}) for i in list(webscrape["entities"])])
+                # except: pass
+                # try: data["top_words"] = webscrape["top_words"]
+                # except: pass
+                # except:
+                #     pass
         for tag in i["node"]["tags"]:
             data[tag["name"]] = tag["value"]
 
