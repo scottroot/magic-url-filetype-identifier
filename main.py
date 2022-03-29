@@ -20,7 +20,7 @@ class status (Resource):
 class fileurl(Resource):
     def get(self):
         response = runArweaveAPI()
-        return jsonify({response})
+        return jsonify({"data": response})
 
 
 api.add_resource(status, '/')
