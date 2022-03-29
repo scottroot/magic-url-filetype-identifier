@@ -2,6 +2,8 @@ import requests
 # from urllib.parse import unquote
 import json
 import datetime
+import re
+# from flask import jsonify
 # from html_scraper import scrapeWebpage
 
 
@@ -52,26 +54,22 @@ def runArweaveAPI():
             }
         }
     }"""
-    r = requests.post(url, json={'query': query})
+    response = requests.post(url, json={'query': query})
+    json_data = json.loads(str(response.text))["data"]["transactions"]["edges"]
 
-    json_data = json.loads(r.text)["data"]["transactions"]["edges"]
-    # print(json.dumps(json_data, indent=2))
-
-    data_list = []
+    arweave_api_data = []
     for i in json_data:
-        timestamp = i["node"]["block"]["timestamp"]
-        timestamp = str(datetime.datetime.fromtimestamp(timestamp))
         tx_id = i["node"]["id"]
+        timestamp = i["node"]["block"]["timestamp"]
         filetype = whatTheFile(tx_id)
-        data_header = {"id": tx_id, "timestamp": timestamp}
-        data = {
-            # "tx_id": i["node"]["id"],
-            "timestamp": timestamp,
-            "block_height": i["node"]["block"]["height"],
-            "data_size": i["node"]["data"]["size"],
-            "data_type": i["node"]["data"]["type"],
-            "file_type": filetype
-            }
+
+        data = {"file_type": filetype,
+                "data_type": i["node"]["data"]["type"],
+                "data_size": i["node"]["data"]["size"],
+                "block_height": i["node"]["block"]["height"],
+                "timestamp": str(datetime.datetime.fromtimestamp(timestamp)),
+                "tx_id": tx_id}
+
         # if "HTML" in str(filetype):
             # try:
             # webscrape = scrapeWebpage(tx_id)
@@ -88,14 +86,13 @@ def runArweaveAPI():
             #     pass
         for tag in i["node"]["tags"]:
             data[tag["name"]] = tag["value"]
-        # print(json.dumps(data, indent=4))
-        data_header["data"] =  data
-        data_list.append(data_header)
+
+        arweave_api_data.append(data)
 
     with open('height.txt', 'a') as f:
         f.write("\n"+str(height))
-    # print(data_list)
-    return data_list
+
+    return [dict(i) for i in arweave_api_data]
 
 
 # print(runArweaveAPI())
