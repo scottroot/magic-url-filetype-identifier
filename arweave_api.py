@@ -98,4 +98,4 @@ def runArweaveAPI():
     return data_list
 
 
-print(runArweaveAPI())
+# print(runArweaveAPI())
