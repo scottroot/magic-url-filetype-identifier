@@ -63,8 +63,9 @@ def runArweaveAPI():
         timestamp = str(datetime.datetime.fromtimestamp(timestamp))
         tx_id = i["node"]["id"]
         filetype = whatTheFile(tx_id)
+        data_header = {"id": tx_id, "timestamp": timestamp}
         data = {
-            "tx_id": i["node"]["id"],
+            # "tx_id": i["node"]["id"],
             "timestamp": timestamp,
             "block_height": i["node"]["block"]["height"],
             "data_size": i["node"]["data"]["size"],
@@ -88,12 +89,13 @@ def runArweaveAPI():
         for tag in i["node"]["tags"]:
             data[tag["name"]] = tag["value"]
         # print(json.dumps(data, indent=4))
-        data_list.append(data)
+        data_header["data"] = json.dumps(data)
+        data_list.append(data_header)
 
     with open('height.txt', 'a') as f:
         f.write("\n"+str(height))
-
+    # print(data_list)
     return data_list
 
 
-# print(runArweaveAPI())
+print(runArweaveAPI())
