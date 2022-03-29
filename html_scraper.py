@@ -1,27 +1,64 @@
-# pip install bs4
+from bs4 import BeautifulSoup
 import requests
 import json
-from bs4 import BeautifulSoup
-from scraping_helpers.entity_detector import recognizeEntities
-from scraping_helpers.language_detector import identifyLanguage
-from scraping_helpers.language_translate import translateLanguage
-from scraping_helpers.frequency_finder import topWords
+from collections import Counter
+from string import punctuation
+from heapq import nlargest
+from googletrans import Translator
+import spacy
+from spacy.lang.en.stop_words import STOP_WORDS
+from spacy.language import Language
+from spacy_language_detection import LanguageDetector
+import en_core_web_sm
+import re
 
-def scrapeWebpage (uri):
-	url = "https://arweave.net/" + uri
 
-	r = requests.get(url)
-	soup = BeautifulSoup(r.content, "html.parser")
-	soup_doc = [i.text for i in soup.find_all('p')]
-	if len(soup_doc) < 1:
-		soup_doc = soup.text
-	# soup_doc = "\n".join(soup_doc)
-	if str(soup_doc)[0] == "{":
-		# print(soup_doc)
-		return json.loads(soup_doc)
-	else:
-		language = identifyLanguage(soup_doc)
-		translated = translateLanguage(soup_doc)["text_english"]
-		entities = recognizeEntities(soup_doc, limit=25) # [['Apple', 'ORG'], ['UK', 'GPE'], ['$1 billion', 'MONEY']]
-		top_words = topWords(translated, length=25)
-		return {"language":language, "entities":entities, "top_words":top_words}
+class WebScraper():
+
+    def __init__(self, uri):
+        self.uri = uri
+        self.nlp = en_core_web_sm.load()
+
+    def get_entities(self, limit=25):
+        doc = self.nlp(self.soup)
+        entities = []
+        for ent in doc.ents:
+            if ent.text is not None:
+                entities.append([ent.text.strip(), ent.label_.strip()])
+        return entities[0:limit]
+
+    def _language(self, nlp, name):
+        return LanguageDetector(seed=42)  # We use the seed 42
+
+    def get_language(self):
+        Language.factory("language_detector", func=self._language)
+        self.nlp.add_pipe('language_detector', last=True)
+        doc = self.nlp(self.soup)
+        language = doc._.language
+        return language["language"]
+
+    def get_translation(self):
+        translator = Translator()
+        translation = translator.translate(self.soup, src="auto", dest="en")
+        return translation.text
+
+    def get_webpage(self):
+        url = "https://arweave.net/" + self.uri
+        response = requests.get(url)
+        # r = response.text.strip()#replace("\n","").replace("  "," ")
+        soup = BeautifulSoup(response.content, "html.parser").text
+        self.soup = re.sub(r"[\r|\t|\n]+", "", soup).replace("  "," ").replace("  "," ")
+
+    def run(self):
+        self.get_webpage()
+        ent = self.get_entities()
+        lang = self.get_language()
+        if lang.lower() != "en":
+            tran = self.get_translation()
+        else:
+            tran = ""
+        return {"named_entities": ent, "source_language": lang, "source_text": self.soup, "english_text": tran}
+
+
+# x = WebScraper("C9I8KiECwbjnYxMYoyRC3MqtuQI0RKze59aoNiyXKEI")
+# print(x.run())

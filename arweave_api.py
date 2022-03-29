@@ -4,7 +4,7 @@ import json
 import datetime
 import re
 # from flask import jsonify
-from html_scraper import scrapeWebpage
+from html_scraper import WebScraper
 
 
 def magicId (content):
@@ -69,26 +69,15 @@ def runArweaveAPI():
                 "block_height": i["node"]["block"]["height"],
                 "timestamp": str(datetime.datetime.fromtimestamp(timestamp)),
                 "tx_id": tx_id}
-
-        if "text" in str(filetype):
-            try:
-                webscrape = scrapeWebpage(tx_id)
-                data["raw_text"] = str(webscrape)
-                try: 
-                    data["source_language"] = webscrape["language"]
-                except: pass
-                # print("-----------------------------------------------------------------------------")
-                # print('length of data["entities"] = ' + 
-                try:
-                    data["named_entities"] = webscrape["entities"]
-                except: pass
-                # print('data["entities"][0] = ' + str(webscrape["entities"][0]))
-                # data["entities"] = str([dict({"entity_type":webscrape["entities"][i][1], "entity_name":webscrape["entities"][i][0]}) for i in list(webscrape["entities"])])
-                # except: pass
-                # try: data["top_words"] = webscrape["top_words"]
-                # except: pass
-                # except:
-                #     pass
+        try:
+            webscrape = WebScraper(tx_id)
+            webscrape = webscrape.run()
+            data["named_entities"] = webscrape["named_entities"]
+            data["source_language"] = webscrape["source_language"]
+            data["source_text"] = webscrape["source_text"]
+            data["english_text"] = webscrape["english_text"]
+        except:
+            pass
         for tag in i["node"]["tags"]:
             data[tag["name"]] = tag["value"]
 
