@@ -4,7 +4,7 @@ import json
 import datetime
 import re
 # from flask import jsonify
-# from html_scraper import scrapeWebpage
+from html_scraper import scrapeWebpage
 
 
 def magicId (content):
