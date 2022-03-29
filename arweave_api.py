@@ -89,7 +89,7 @@ def runArweaveAPI():
         for tag in i["node"]["tags"]:
             data[tag["name"]] = tag["value"]
         # print(json.dumps(data, indent=4))
-        data_header["data"] = json.dumps(data)
+        data_header["data"] =  data
         data_list.append(data_header)
 
     with open('height.txt', 'a') as f:
