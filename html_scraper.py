@@ -1,3 +1,9 @@
+# !/venv/Script python
+import spacy
+from spacy.lang.en.stop_words import STOP_WORDS
+from spacy.language import Language
+from spacy_language_detection import LanguageDetector
+import en_core_web_sm
 from bs4 import BeautifulSoup
 import requests
 import json
@@ -5,19 +11,15 @@ from collections import Counter
 from string import punctuation
 from heapq import nlargest
 from googletrans import Translator
-import spacy
-from spacy.lang.en.stop_words import STOP_WORDS
-from spacy.language import Language
-from spacy_language_detection import LanguageDetector
-import en_core_web_sm
 import re
 
-
 class WebScraper():
+    
 
     def __init__(self, uri):
         self.uri = uri
         self.nlp = en_core_web_sm.load()
+        # self.nlp = spacy.load("en_core_web_sm")
 
     def get_entities(self, limit=25):
         doc = self.nlp(self.soup)
