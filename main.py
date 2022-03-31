@@ -7,7 +7,7 @@ from arweave_api import runArweaveAPI
 app = Flask(__name__)
 api = Api(app)
 CORS(app)
-
+ 
 
 class status (Resource):
     def get(self):
@@ -19,7 +19,10 @@ class status (Resource):
 
 class fileurl(Resource):
     def get(self):
-        return jsonify({"content": runArweaveAPI()})
+        response = runArweaveAPI()
+        # print(type(runArweaveAPI()))
+        # return jsonify({"content": [dict(i) for i in response]})
+        return jsonify({"content": response})
 
 
 api.add_resource(status, '/')
